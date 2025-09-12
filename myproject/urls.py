@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
     path('users/', include('users.urls'))
+    path('api/', include('pass_manager.urls')),
 ]
