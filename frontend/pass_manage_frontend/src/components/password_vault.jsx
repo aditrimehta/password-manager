@@ -1,82 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Plus, Search, Shield, Lock } from "lucide-react";
 import { PasswordCard } from "./password_card";
 import { PasswordForm } from "./password_form";
-import { useToast } from "./ui/toast";
+
+import {
+  getPasswords,
+  addPassword,
+  updatePassword,
+  deletePassword,
+} from "../api/api"; // <-- API service file
 
 export const PasswordVault = () => {
-  const [passwords, setPasswords] = useState([
-    {
-      id: "1",
-      website: "github.com",
-      username: "johndoe@example.com",
-      password: "SecurePassword123!",
-      createdAt: new Date("2024-01-15"),
-      updatedAt: new Date("2024-01-15"),
-    },
-    {
-      id: "2",
-      website: "google.com",
-      username: "john.doe.work@gmail.com",
-      password: "MyGooglePass456@",
-      createdAt: new Date("2024-01-10"),
-      updatedAt: new Date("2024-01-20"),
-    },
-  ]);
-  
+  const [passwords, setPasswords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
-  const { toast } = useToast();
+
+
+  // Fetch passwords from Django API on mount
+  useEffect(() => {
+    fetchPasswords();
+  }, []);
+
+  const fetchPasswords = async () => {
+    const data = await getPasswords();
+    setPasswords(data);
+  };
 
   const filteredPasswords = passwords.filter(
     (entry) =>
       entry.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.username.toLowerCase().includes(searchQuery.toLowerCase())
+      entry.decrypted_username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddPassword = (data) => {
-    const newEntry = {
-      id: Date.now().toString(),
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    
-    setPasswords([...passwords, newEntry]);
-    setShowForm(false);
-    toast({
-      title: "Password added",
-      description: "New password entry has been saved to your vault.",
-    });
-  };
-
-  const handleEditPassword = (data) => {
-    if (editingEntry) {
-      const updatedPasswords = passwords.map((entry) =>
-        entry.id === editingEntry.id
-          ? { ...entry, ...data, updatedAt: new Date() }
-          : entry
-      );
-      setPasswords(updatedPasswords);
-      setEditingEntry(null);
+  // Add new password via API
+  const handleAddPassword = async (data) => {
+    const added = await addPassword(data); // data: { website, username, password }
+    if (added) {
+      await fetchPasswords();
       setShowForm(false);
-      toast({
-        title: "Password updated",
-        description: "Password entry has been updated successfully.",
-      });
     }
   };
 
-  const handleDeletePassword = (id) => {
-    const updatedPasswords = passwords.filter((entry) => entry.id !== id);
-    setPasswords(updatedPasswords);
-    toast({
-      title: "Password deleted",
-      description: "Password entry has been removed from your vault.",
-    });
+  // Edit password via API
+  const handleEditPassword = async (data) => {
+    if (editingEntry) {
+      const updated = await updatePassword(editingEntry.id, data);
+      if (updated) {
+        fetchPasswords();
+        setEditingEntry(null);
+        setShowForm(false);
+      }
+    }
+  };
+
+  // Delete password via API
+  const handleDeletePassword = async (id) => {
+    const deleted = await deletePassword(id);
+    if (deleted) {
+      fetchPasswords();
+    }
   };
 
   const startEdit = (entry) => {
@@ -94,15 +79,15 @@ export const PasswordVault = () => {
       <div className="container mx-auto px-4 pb-8">
         {/* Header */}
         <div className="mb-6">
-  <div className="flex flex-col items-center gap-3 mb-4">
-    <div className="w-12 h-12 rounded-xl bg-vault-primary flex items-center justify-center">
-      <Shield className="w-6 h-6 text-white" />
-    </div>
-    <div className="text-center">
-      <h1 className="text-3xl font-bold text-foreground py-2">Password Vault</h1>
-      <p className="text-muted-foreground">Securely manage your passwords</p>
-    </div>
-  </div>
+          <div className="flex flex-col items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-vault-primary flex items-center justify-center">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-foreground py-2">Password Vault</h1>
+              <p className="text-muted-foreground">Securely manage your passwords</p>
+            </div>
+          </div>
 
           {/* Search and Add */}
           <div className="flex gap-4 items-center justify-center">
@@ -185,3 +170,5 @@ export const PasswordVault = () => {
     </div>
   );
 };
+
+

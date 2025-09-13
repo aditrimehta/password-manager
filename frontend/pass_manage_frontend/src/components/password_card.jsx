@@ -3,33 +3,25 @@ import { Card, CardContent, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Eye, EyeOff, Edit, Trash2, Copy, Globe } from "lucide-react";
-import { useToast } from "./ui/toast";
-
 
 export const PasswordCard = ({ entry, onEdit, onDelete }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const { toast } = useToast();
+  const [copiedField, setCopiedField] = useState(null);
 
-  const copyToClipboard = async (text, label) => {
+  const copyToClipboard = async (text, field) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast({
-        title: "Copied to clipboard",
-        description: `${label} copied successfully`,
-      });
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 1500);
     } catch (err) {
-      toast({
-        title: "Copy failed",
-        description: "Unable to copy to clipboard",
-        variant: "destructive",
-      });
+      console.error("Failed to copy!", err);
     }
   };
 
   const getDomainFromUrl = (url) => {
     try {
-      const domain = new URL(url.startsWith('http') ? url : `https://${url}`).hostname;
-      return domain.replace('www.', '');
+      const domain = new URL(url.startsWith("http") ? url : `https://${url}`).hostname;
+      return domain.replace("www.", "");
     } catch {
       return url;
     }
@@ -84,7 +76,7 @@ export const PasswordCard = ({ entry, onEdit, onDelete }) => {
               </Button>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Username</span>
             <div className="flex items-center gap-2">
@@ -99,7 +91,7 @@ export const PasswordCard = ({ entry, onEdit, onDelete }) => {
               </Button>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Password</span>
             <div className="flex items-center gap-2">
@@ -124,10 +116,10 @@ export const PasswordCard = ({ entry, onEdit, onDelete }) => {
               </Button>
             </div>
           </div>
-          
+
           <div className="pt-2 border-t border-vault-border">
             <Badge variant="secondary" className="text-xs">
-              Updated {entry.updatedAt.toLocaleDateString()}
+              Updated {new Date(entry.updatedAt).toLocaleDateString()}
             </Badge>
           </div>
         </div>

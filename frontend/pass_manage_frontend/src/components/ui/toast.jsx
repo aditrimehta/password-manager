@@ -3,7 +3,7 @@ import { useState } from "react";
 let toastId = 0;
 
 export function useToast() {
-  const [toasts, setToasts] = useState([]);
+  const {toasts, setToasts} = useToast();
 
   function showToast(message) {
     const id = ++toastId;
