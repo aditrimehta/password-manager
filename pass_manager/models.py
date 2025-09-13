@@ -11,7 +11,7 @@ class VaultItem(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="vault_items"
+        related_name="vault_items",
     )
     website = models.CharField(max_length=255)
     username = models.BinaryField()             # stored encrypted

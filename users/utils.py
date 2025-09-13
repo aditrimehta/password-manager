@@ -12,7 +12,7 @@ def send_otp(email):
     subject = "Your OTP Verification Code"
     message = f"Your OTP is {otp}. Do not share it with anyone."
     from_email = settings.DEFAULT_FROM_EMAIL
-    send_mail(subject, message, from_email, [email])
+    send_mail(subject, message, from_email, [email], fail_silently=False)
     return otp
 
 
