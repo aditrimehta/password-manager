@@ -25,16 +25,25 @@ export const PasswordVault = () => {
   }, []);
 
   const fetchPasswords = async () => {
+  try {
     const data = await getPasswords();
     console.log("API response:", data);
-    setPasswords(data);
-  };
 
-  const filteredPasswords = passwords.filter(
-    (entry) =>
-      entry.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.decrypted_username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    // ensure it's always an array
+    setPasswords(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error(error);
+    setPasswords([]); // fallback
+  }
+};
+
+
+ const filteredPasswords = (passwords || []).filter(
+  (entry) =>
+    entry.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    entry.username.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   // Add new password via API
   const handleAddPassword = async (data) => {

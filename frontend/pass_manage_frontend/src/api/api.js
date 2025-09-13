@@ -24,7 +24,15 @@ export const getPasswords = async () => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return await res.json();
+  const data = await res.json();
+
+  // Map backend fields to what PasswordCard expects
+  return data.map((item) => ({
+    ...item,
+    username: item.decrypted_username,  // map field
+    password: item.decrypted_password,  // map field
+    updatedAt: item.updated_at,         // optional: map snake_case to camelCase
+  }));
 };
 
 export const addPassword = async (data) => {
@@ -69,4 +77,3 @@ export const deletePassword = async (id) => {
     return false;
   }
 };
-
