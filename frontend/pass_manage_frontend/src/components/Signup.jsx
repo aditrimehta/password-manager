@@ -31,29 +31,33 @@ export default function Signup() {
     }
   };
 
-  // Step 2: Verify OTP
-  const handleVerifyOtp = async () => {
-    setError("");
-    try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/users/verify-signup-otp/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        }
-      );
-
-      const data = await res.json();
-      if (res.ok) {
-        navigate("/vault"); // redirect to vault after success
-      } else {
-        setError(data.message || "Invalid OTP");
+const handleVerifyOtp = async () => {
+  setError("");
+  try {
+    const res = await fetch(
+      "http://127.0.0.1:8000/users/verify-signup-otp/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
       }
-    } catch (err) {
-      setError("Server error. Try again later.");
+    );
+
+    const data = await res.json();
+    if (res.ok) {
+      // ✅ Save JWT tokens in localStorage
+      localStorage.setItem("accessToken", data.tokens.access);
+      localStorage.setItem("refreshToken", data.tokens.refresh);
+
+      navigate("/vault"); // redirect to vault after success
+    } else {
+      setError(data.message || "Invalid OTP");
     }
-  };
+  } catch (err) {
+    setError("Server error. Try again later.");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

@@ -31,7 +31,7 @@ export default function Login() {
     }
   };
 
-  // Step 2: Verify OTP
+  // Step 2: Verify OTP + Save JWT tokens
   const handleVerifyOtp = async () => {
     setError("");
     try {
@@ -42,8 +42,13 @@ export default function Login() {
       });
 
       const data = await res.json();
-      if (res.ok) {
-        navigate("/vault"); // redirect to vault after success
+      if (res.ok && data.tokens) {
+        // ✅ Save tokens to localStorage
+        localStorage.setItem("accessToken", data.tokens.access);
+        localStorage.setItem("refreshToken", data.tokens.refresh);
+
+        // redirect to vault after success
+        navigate("/vault");
       } else {
         setError(data.message || "Invalid OTP");
       }

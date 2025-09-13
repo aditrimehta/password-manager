@@ -96,7 +96,8 @@ export const PasswordCard = ({ entry, onEdit, onDelete }) => {
             <span className="text-sm text-muted-foreground">Password</span>
             <div className="flex items-center gap-2">
               <code className="text-sm bg-muted px-2 py-1 rounded font-mono">
-                {showPassword ? entry.password : "•".repeat(entry.password.length)}
+                {showPassword ? entry.password : "•".repeat(entry.password?.length || 0)}
+
               </code>
               <Button
                 variant="ghost"

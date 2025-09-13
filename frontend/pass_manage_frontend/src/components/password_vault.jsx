@@ -26,6 +26,7 @@ export const PasswordVault = () => {
 
   const fetchPasswords = async () => {
     const data = await getPasswords();
+    console.log("API response:", data);
     setPasswords(data);
   };
 
