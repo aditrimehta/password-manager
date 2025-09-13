@@ -1,14 +1,11 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import { PasswordVault } from "./components/password_vault";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <PasswordVault />
+    <App />
   </React.StrictMode>
 );
-
-
