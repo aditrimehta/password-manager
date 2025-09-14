@@ -31,7 +31,7 @@ export const getPasswords = async () => {
     ...item,
     username: item.decrypted_username,  // map field
     password: item.decrypted_password,  // map field
-    updatedAt: item.updated_at,         // optional: map snake_case to camelCase
+    updatedAt: item.updated_at,         
   }));
 };
 
